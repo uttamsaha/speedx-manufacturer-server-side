@@ -40,7 +40,14 @@ async function run(){
         app.get('/review', async(req,res) => {
             const reviews = await reviewsCollection.find().toArray();
             res.send(reviews);
-        })
+        });
+
+        //posting reviews 
+        app.post('/tool', async(req,res) => {
+            const review = req.body;
+            const result = await reviewsCollection.insertOne(review);
+            res.send({ success: true, result });
+        });
     }
     finally{
 
