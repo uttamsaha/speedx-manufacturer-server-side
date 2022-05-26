@@ -28,11 +28,18 @@ async function run(){
     try{
         await client.connect();
         const toolsCollection = client.db("speedx").collection("tools");
+        const reviewsCollection = client.db("speedx").collection("reviews");
         
         //getting all tools
         app.get('/tool', async(req,res) =>{
             const tools = await toolsCollection.find().toArray();
             res.send(tools);
+        });
+
+        //getting all reviews
+        app.get('/review', async(req,res) => {
+            const reviews = await reviewsCollection.find().toArray();
+            res.send(reviews);
         })
     }
     finally{
