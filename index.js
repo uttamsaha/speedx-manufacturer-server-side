@@ -64,16 +64,32 @@ async function run() {
       res.send(tools);
     });
 
+    //getting all users
+    app.get("/users", async (req, res) => {
+      const tools = await userCollection.find().toArray();
+      res.send(tools);
+    });
+
     //getting my orders by email
     app.get("/order", async (req, res) => {
       // const decodedEmail = req.decoded.email;
       const email = req.query.email;
-        const query = { email: email };
-        const cursor = orderCollection.find(query);
-        const items = await cursor.toArray();
-        res.send(items);
-      
+      const query = { email: email };
+      const cursor = orderCollection.find(query);
+      const items = await cursor.toArray();
+      res.send(items);
     });
+
+    //getting single user by email
+    app.get("/user", async (req, res) => {
+      // const decodedEmail = req.decoded.email;
+      const email = req.query.email;
+      const query = { email: email };
+      const cursor = userCollection.find(query);
+      const user = await cursor.toArray();
+      res.send(user);
+    });
+
 
     //getting all reviews
     app.get("/review", async (req, res) => {
@@ -128,14 +144,13 @@ async function run() {
       res.send({ result, token });
     });
 
-
     //delete my order api
-    app.delete('/order/:id',async(req,res)=>{
+    app.delete("/order/:id", async (req, res) => {
       const id = req.params.id;
-      const query = {_id: ObjectId(id)};
+      const query = { _id: ObjectId(id) };
       const result = await orderCollection.deleteOne(query);
       res.send(result);
-  });
+    });
   } finally {
   }
 }
