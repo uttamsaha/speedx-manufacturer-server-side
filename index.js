@@ -90,7 +90,6 @@ async function run() {
       res.send(user);
     });
 
-
     //getting all reviews
     app.get("/review", async (req, res) => {
       const reviews = await reviewsCollection.find().toArray();
@@ -98,7 +97,8 @@ async function run() {
     });
 
     //posting reviews
-    app.post("/tool", async (req, res) => {
+
+    app.post("/review", async (req, res) => {
       const review = req.body;
       const result = await reviewsCollection.insertOne(review);
       res.send({ success: true, result });
@@ -149,6 +149,31 @@ async function run() {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await orderCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    app.get("/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = await userCollection.findOne({ email: email });
+      const isAdmin = user.role === "admin";
+      res.send({ admin: isAdmin });
+    });
+
+    app.put("/user/admin/:email", verifyJWT, verifyAdmin, async (req, res) => {
+      //verifying admin using middleware
+      const email = req.params.email;
+      const filter = { email: email };
+      const updateDoc = {
+        $set: { role: "admin" },
+      };
+      const result = await userCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    //add post/tool/product
+    app.post("/tool", async (req, res) => {
+      const product = req.body;
+      const result = await toolsCollection.insertOne(product);
       res.send(result);
     });
   } finally {
