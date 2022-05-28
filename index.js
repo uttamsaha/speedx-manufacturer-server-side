@@ -46,23 +46,33 @@ async function run() {
     const orderCollection = client.db("speedx").collection("orders");
 
     //verify admin
-    const verifyAdmin = async(req, res, next) => {
+    const verifyAdmin = async (req, res, next) => {
       const requester = req.decoded.email;
       const requesterAccount = await userCollection.findOne({
         email: requester,
       });
-      if (requesterAccount.role === "admin"){
+      if (requesterAccount.role === "admin") {
         next();
+      } else {
+        res.status(403).send({ message: "forbidden access" });
       }
-      else{
-        res.status(403).send({message: 'forbidden access'});
-      }
-    }
+    };
 
     //getting all tools
     app.get("/tool", async (req, res) => {
       const tools = await toolsCollection.find().toArray();
       res.send(tools);
+    });
+
+    //getting my orders by email
+    app.get("/order", async (req, res) => {
+      // const decodedEmail = req.decoded.email;
+      const email = req.query.email;
+        const query = { email: email };
+        const cursor = orderCollection.find(query);
+        const items = await cursor.toArray();
+        res.send(items);
+      
     });
 
     //getting all reviews
@@ -78,7 +88,6 @@ async function run() {
       res.send({ success: true, result });
     });
 
-    
     //post orders
     app.post("/order", async (req, res) => {
       const order = req.body;
@@ -94,13 +103,13 @@ async function run() {
     });
 
     //checking admin or not
-    app.get('/admin/:email', async(req, res) =>{
-        const email = req.params.email;
-        const user = await userCollection.findOne({email: email});
-        const isAdmin = user.role === 'admin';
-        res.send({admin: isAdmin})
-      })
-      
+    app.get("/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = await userCollection.findOne({ email: email });
+      const isAdmin = user.role === "admin";
+      res.send({ admin: isAdmin });
+    });
+
     //storing user email to database
     app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
