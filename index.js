@@ -180,7 +180,7 @@ async function run() {
       res.send({ admin: isAdmin });
     });
 
-    app.put("/user/admin/:email", verifyJWT, verifyAdmin, async (req, res) => {
+    app.put("/user/admin/:email", async (req, res) => {
       //verifying admin using middleware
       const email = req.params.email;
       const filter = { email: email };
