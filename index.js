@@ -43,6 +43,7 @@ async function run() {
     const toolsCollection = client.db("speedx").collection("tools");
     const reviewsCollection = client.db("speedx").collection("reviews");
     const userCollection = client.db("speedx").collection("users");
+    const orderCollection = client.db("speedx").collection("orders");
 
     //verify admin
     const verifyAdmin = async(req, res, next) => {
@@ -74,6 +75,14 @@ async function run() {
     app.post("/tool", async (req, res) => {
       const review = req.body;
       const result = await reviewsCollection.insertOne(review);
+      res.send({ success: true, result });
+    });
+
+    
+    //post orders
+    app.post("/order", async (req, res) => {
+      const order = req.body;
+      const result = await orderCollection.insertOne(order);
       res.send({ success: true, result });
     });
 
