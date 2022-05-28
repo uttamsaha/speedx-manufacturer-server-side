@@ -44,6 +44,20 @@ async function run() {
     const reviewsCollection = client.db("speedx").collection("reviews");
     const userCollection = client.db("speedx").collection("users");
 
+    //verify admin
+    const verifyAdmin = async(req, res, next) => {
+      const requester = req.decoded.email;
+      const requesterAccount = await userCollection.findOne({
+        email: requester,
+      });
+      if (requesterAccount.role === "admin"){
+        next();
+      }
+      else{
+        res.status(403).send({message: 'forbidden access'});
+      }
+    }
+
     //getting all tools
     app.get("/tool", async (req, res) => {
       const tools = await toolsCollection.find().toArray();
@@ -70,6 +84,14 @@ async function run() {
       res.send(tool);
     });
 
+    //checking admin or not
+    app.get('/admin/:email', async(req, res) =>{
+        const email = req.params.email;
+        const user = await userCollection.findOne({email: email});
+        const isAdmin = user.role === 'admin';
+        res.send({admin: isAdmin})
+      })
+      
     //storing user email to database
     app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
