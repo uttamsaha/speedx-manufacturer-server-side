@@ -72,11 +72,9 @@ async function run() {
 
     //getting my orders by email
     app.get("/order", async (req, res) => {
-      // const decodedEmail = req.decoded.email;
       const email = req.query.email;
       const query = { email: email };
-      const cursor = orderCollection.find(query);
-      const items = await cursor.toArray();
+      const items = await orderCollection.find(query).toArray();
       res.send(items);
     });
 
